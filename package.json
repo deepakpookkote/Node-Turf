@@ -1,0 +1,23 @@
+{
+  "name": "node-turf",
+  "version": "1.0.0",
+  "description": "NodeJs Experiments",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepakpookkote/Node-Turf.git"
+  },
+  "author": "Deepak Pookkote",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/deepakpookkote/Node-Turf/issues"
+  },
+  "homepage": "https://github.com/deepakpookkote/Node-Turf#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
