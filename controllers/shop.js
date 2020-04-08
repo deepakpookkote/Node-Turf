@@ -13,7 +13,7 @@ exports.getProducts = ('/', (req, res, next) => {
                 hadProducts: products.length > 0,
                 activeShop: true,
                 productCSS: true,
-                isAuthenticated: req.isLoggedIn
+                isAuthenticated: req.session.isLoggedIn
             });
         })
         .catch()
@@ -27,7 +27,7 @@ exports.getProduct = ((req, res, next) => {
                 product: product,
                 pageTitle: product.title,
                 path: '/products',
-                isAuthenticated: req.isLoggedIn
+                isAuthenticated: req.session.isLoggedIn
             })
         })
         .catch(err => {
@@ -42,7 +42,7 @@ exports.getIndex = ((req, res, next) => {
                 prods: products,
                 pageTitle: 'Shop',
                 path: '/',
-                isAuthenticated: req.isLoggedIn
+                isAuthenticated: req.session.isLoggedIn
             });
         })
         .catch(err => {
@@ -60,7 +60,7 @@ exports.getCart = ((req, res, next) => {
                 path: '/cart',
                 pageTitle: 'Your Cart',
                 products: products,
-                isAuthenticated: req.isLoggedIn
+                isAuthenticated: req.session.isLoggedIn
             });
         })
         .catch(error => {
@@ -106,8 +106,8 @@ exports.postOrder = (req, res, next) => {
             });
             const order = new Order({
                 user: {
-                    name: req.user.name,
-                    userId: req.user._id
+                    name: req.session.user.name,
+                    userId: req.session.user._id
                 },
                 products: products
             });
@@ -123,13 +123,13 @@ exports.postOrder = (req, res, next) => {
 }
 
 exports.getOrders = ((req, res, next) => {
-    Order.find({ 'user.userId': req.user._id})
+    Order.find({ 'user.userId': req.session.user._id})
         .then(orders => {
             res.render('shop/orders', {
                 path: '/orders',
                 orders: orders,
                 pageTitle: 'Your Orders',
-                isAuthenticated: req.isLoggedIn
+                isAuthenticated: req.session.isLoggedIn
             });
         })
         .catch(error => console.log(error));
