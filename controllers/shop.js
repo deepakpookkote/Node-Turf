@@ -12,8 +12,7 @@ exports.getProducts = ('/', (req, res, next) => {
                 path: '/products',
                 hadProducts: products.length > 0,
                 activeShop: true,
-                productCSS: true,
-                isAuthenticated: req.session.isLoggedIn
+                productCSS: true
             });
         })
         .catch()
@@ -26,8 +25,7 @@ exports.getProduct = ((req, res, next) => {
             res.render('shop/product-detail', {
                 product: product,
                 pageTitle: product.title,
-                path: '/products',
-                isAuthenticated: req.session.isLoggedIn
+                path: '/products'
             })
         })
         .catch(err => {
@@ -41,8 +39,7 @@ exports.getIndex = ((req, res, next) => {
             res.render('shop/index', {
                 prods: products,
                 pageTitle: 'Shop',
-                path: '/',
-                isAuthenticated: req.session.isLoggedIn
+                path: '/'
             });
         })
         .catch(err => {
@@ -59,8 +56,7 @@ exports.getCart = ((req, res, next) => {
             res.render('shop/cart', {
                 path: '/cart',
                 pageTitle: 'Your Cart',
-                products: products,
-                isAuthenticated: req.session.isLoggedIn
+                products: products
             });
         })
         .catch(error => {
@@ -106,7 +102,7 @@ exports.postOrder = (req, res, next) => {
             });
             const order = new Order({
                 user: {
-                    name: req.session.user.name,
+                    email: req.session.user.email,
                     userId: req.session.user._id
                 },
                 products: products
@@ -128,8 +124,7 @@ exports.getOrders = ((req, res, next) => {
             res.render('shop/orders', {
                 path: '/orders',
                 orders: orders,
-                pageTitle: 'Your Orders',
-                isAuthenticated: req.session.isLoggedIn
+                pageTitle: 'Your Orders'
             });
         })
         .catch(error => console.log(error));
