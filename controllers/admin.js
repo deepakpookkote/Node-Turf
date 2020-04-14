@@ -16,9 +16,24 @@ exports.getAddProduct = ('/edit-product', (req, res, next) => {
 
 exports.postAddProduct = ('/add-product', (req, res, next) => {
     const title = req.body.title;
-    const imageUrl = req.body.imageUrl;
+    const image = req.file;
     const price = req.body.price;
     const description = req.body.description;
+    if(!image) {
+        return res.status(422).render('admin/edit-product', {
+            pageTitle: 'Add Product',
+            path: '/admin/add-product',
+            editing: false,
+            hasError: true,
+            product: {
+                title: title,
+                price: price,
+                description: description,
+            },
+            errorMessage: 'Attached file is not an image or either the format is not acceptable',
+            validationErrors: []
+        });
+    }
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         return res.status(422).render('admin/edit-product', {
@@ -28,7 +43,6 @@ exports.postAddProduct = ('/add-product', (req, res, next) => {
             hasError: true,
             product: {
                 title: title,
-                imageUrl: imageUrl,
                 price: price,
                 description: description,
             },
@@ -36,6 +50,7 @@ exports.postAddProduct = ('/add-product', (req, res, next) => {
             validationErrors: errors.array()
         });
     }
+    const imageUrl = image.path;
     const product = new Product({
         //_id: new mongoose.Types.ObjectId('5e91e5cddd852e0f0ed96835'),
         title: title,
@@ -88,11 +103,10 @@ exports.postEditProduct = ((req, res, next) => {
     const prodId = req.body.productId;
     const updatedTitle = req.body.title;
     const updatedPrice = req.body.price;
-    const updatedImageUrl = req.body.imageUrl
+    const image = req.file
     const updatedDescription = req.body.description;
     const errors = validationResult(req);
     if(!errors.isEmpty()){
-        console.log(errors.array());
         return res.status(422).render('admin/edit-product', {
             pageTitle: 'Edit Product',
             path: '/admin/edit-product',
@@ -100,7 +114,6 @@ exports.postEditProduct = ((req, res, next) => {
             hasError: true,
             product: {
                 title: updatedTitle,
-                imageUrl: updatedImageUrl,
                 price: updatedPrice,
                 description: updatedDescription,
                 _id: prodId
@@ -117,7 +130,9 @@ exports.postEditProduct = ((req, res, next) => {
             product.title = updatedTitle;
             product.price = updatedPrice;
             product.description = updatedDescription;
-            product.imageUrl = updatedImageUrl;
+            if(image) {
+                product.imageUrl = image.path;
+            }
             return product.save()
             .then(result => {
                 console.log('product updated')

@@ -1,4 +1,7 @@
 
+const fs = require('fs');
+const path = require('path');
+const pdfKit = require('pdfkit');
 const Product = require('../models/product');
 const Order = require('../models/order');
 
@@ -110,9 +113,9 @@ exports.postOrder = (req, res, next) => {
         .populate('cart.items.productId')
         .execPopulate()
         .then(user => {
-            console.log('user',user.cart.items);
+            console.log('user', user.cart.items);
             const products = user.cart.items.map(i => {
-                return { quantity: i.quantity, product: {...i.productId._doc} };
+                return { quantity: i.quantity, product: { ...i.productId._doc } };
             });
             const order = new Order({
                 user: {
@@ -138,13 +141,47 @@ exports.postOrder = (req, res, next) => {
 }
 
 exports.getOrders = ((req, res, next) => {
-    Order.find({ 'user.userId': req.session.user._id})
+    Order.find({ 'user.userId': req.session.user._id })
         .then(orders => {
             res.render('shop/orders', {
                 path: '/orders',
                 orders: orders,
                 pageTitle: 'Your Orders'
             });
+        })
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        })
+});
+
+exports.getInvoice = ((req, res, next) => {
+    const orderId = req.params.orderId;
+    Order.findById(orderId)
+        .then(order => {
+            if (!order) {
+                return next(new Error('No Order Found'));
+            }
+            if (order.user.userId.toString() !== req.user._id.toString()) {
+                return next(new Error('Unauthorized access'))
+            }
+            const invoiceName = `invoice-${orderId}.pdf`;
+            const invoicePath = path.join('data', 'invoices', invoiceName);
+            // fs.readFile(invoicePath, (error, data) => {
+            //     if (error) {
+            //         return next();
+            //     }
+            //     res.setHeader('Content-Type', 'application/pdf');
+            //     res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
+
+            //     res.send(data);
+            // });
+            // const file = fs.createReadStream(invoicePath);
+            // res.setHeader('Content-Type', 'application/pdf');
+            // res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
+            // file.pipe(res);
+
         })
         .catch(err => {
             const error = new Error(err);
