@@ -11,7 +11,7 @@ const multer = require('multer');
 
 const errorController = require('./controllers/error');
 
-const MONGODB_URI = 'mongodb+srv://deepak:deepak1456@cluster0-nqe1i.mongodb.net/shopKart?&w=majority';
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0-nqe1i.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}?&w=majority`;
 const User = require('./models/user');
 const app = express();
 
@@ -112,7 +112,7 @@ mongoose
     .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(result => {
         console.log('connected');
-        app.listen(3030);
+        app.listen(process.env.PORT || 3000);
     })
     .catch(error => console.log(error));
 
